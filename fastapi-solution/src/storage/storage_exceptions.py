@@ -1,0 +1,2 @@
+class StorageConnectionError(Exception):
+    pass

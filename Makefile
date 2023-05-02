@@ -14,6 +14,12 @@ run: ## - Запустить docker-compose
 stop: ## - Уронить docker-compose
 	docker-compose -f docker-compose.yaml down
 
+test: ## - Запуск тестов
+	docker-compose -f fastapi-solution/tests/functional/docker-compose.yaml up --build -d
+
+stop_test: ## - Уронить контейнер для тестов
+	docker-compose -f fastapi-solution/tests/functional/docker-compose.yaml down
+
 clean: ## - Очистить docker
 	docker stop $$(docker ps -aq)
 	docker rm $$(docker ps -aq)

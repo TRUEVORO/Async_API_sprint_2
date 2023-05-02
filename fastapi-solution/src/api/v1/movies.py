@@ -81,6 +81,6 @@ async def movies_search(
     movie_service: MovieService = Depends(get_movie_service),
 ) -> MoviesAPI | HTTPException:
     movies, total = await movie_service.search(
-        query=query, sort_by=sort, filter_by=('genre', genre) if genre else None, page=page, page_size=page_size
+        query=query, sort_by=sort, filter_by=('genres', genre) if genre else None, page=page, page_size=page_size
     )
     return MoviesAPI(movies=movies, total=total)

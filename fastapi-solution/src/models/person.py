@@ -22,12 +22,12 @@ class PersonFull(_Person):
 
 
 class Persons(BaseModel):
-    """Person models."""
+    """Persons model."""
 
     persons: list[_Person] = Field(default_factory=list)
 
 
-class Person(_Person, OrjsonMixin):
+class Person(PersonFull, OrjsonMixin):
     """Person model for business logic."""
 
     pass

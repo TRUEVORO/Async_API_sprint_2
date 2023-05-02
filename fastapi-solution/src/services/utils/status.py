@@ -22,7 +22,7 @@ def status():
                     status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail='client is unavailable, retry later'
                 )
 
-            if not result:
+            if not result or 0 in result:
                 raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='not found')
 
             return result

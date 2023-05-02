@@ -2,11 +2,11 @@ from abc import ABC
 from uuid import UUID
 
 from client import AsyncElasticsearchClient
-from core import Mapper, status
+from core import Mapper
 from db import redis
 from models import Genre, Movie, Person
 
-from .utils import SearchBodyCreator, cache
+from .utils import SearchBodyCreator, cache, status
 
 
 class BaseService(ABC):

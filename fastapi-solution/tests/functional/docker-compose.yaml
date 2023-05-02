@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  fastapi-solution-test:
+    container_name: app-test
+    build:
+      context: ../../.
+      dockerfile: Dockerfile
+    image: fastapi-image
+    restart: always
+    environment:
+      - PROJECT_NAME=movies-test
+      - SERVICE_DSN=http://fastapi-solution-test:8000
+      - ELASTICSEARCH_DSN=http://elasticsearch-test:9200
+      - REDIS_FASTAPI_DSN=redis://test:123qwe@redis-test:6379/1
+    ports:
+      - '8000:8000'
+    depends_on:
+      - elasticsearch-test
+      - redis-test
+
+  tests:
+    image: fastapi-image
+    entrypoint: >
+      sh -c "pip install --no-cache-dir -r tests/functional/requirements.txt
+      && python tests/functional/utils/elasticsearch_setup.py
+      && pytest tests/functional/src"
+    environment:
+      - PYTHONPATH=/opt/fastapi_solution:/opt/fastapi_solution/src
+      - PROJECT_NAME=movies-test
+      - SERVICE_DSN=http://fastapi-solution-test:8000
+      - ELASTICSEARCH_DSN=http://elasticsearch-test:9200
+      - REDIS_FASTAPI_DSN=redis://test:123qwe@redis-test:6379/1
+    depends_on:
+      - fastapi-solution-test
+      - elasticsearch-test
+      - redis-test
+
+
+  elasticsearch-test:
+    container_name: elasticsearch-test
+    image: elasticsearch:8.7.0
+    restart: always
+    volumes:
+      - elasticsearch-test:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms2048m -Xmx2048m
+    ports:
+      - '9200:9200'
+
+  redis-test:
+    container_name: redis-test
+    image: redis:7.0.10-alpine
+    restart: always
+    volumes:
+      - redis-test:/data
+    ports:
+      - '6379:6379'
+
+volumes:
+  elasticsearch-test:
+  redis-test:

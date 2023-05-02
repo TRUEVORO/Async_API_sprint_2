@@ -13,6 +13,11 @@ class _Person(UUIDMixin):
     """Person model."""
 
     full_name: str = Field(default_factory=str)
+
+
+class PersonFull(_Person):
+    """Person model with films."""
+
     films: list[_Films] = Field(default_factory=list)
 
 

@@ -21,7 +21,7 @@ class AsyncElasticsearchClient(AsyncBaseClient):
 
         return mapper.model(**doc['_source'])
 
-    async def search(self, search_body: dict, mapper: Mapper) -> list[Genre | Movie | Person] | None:
+    async def search(self, search_body: dict, mapper: Mapper) -> tuple[list[Genre | Movie | Person], int] | None:
         """Search data in Elasticsearch."""
 
         try:
@@ -29,4 +29,4 @@ class AsyncElasticsearchClient(AsyncBaseClient):
         except NotFoundError:
             return None
 
-        return [mapper.model(**doc['_source']) for doc in docs['hits']['hits']]
+        return [mapper.model(**doc['_source']) for doc in docs['hits']['hits']], docs['hits']['total']['value']

@@ -1,7 +1,7 @@
 from logging import config as logging_config
 from pathlib import Path
 
-from pydantic import AnyHttpUrl, BaseSettings, RedisDsn
+from pydantic import AnyHttpUrl, BaseSettings, Field, RedisDsn
 
 from .logger import LOGGING
 
@@ -15,8 +15,11 @@ class Settings(BaseSettings):
 
     project_name: str
     elasticsearch_dsn: AnyHttpUrl
-    redis_fastapi_dsn: RedisDsn
+    redis_dsn: RedisDsn = Field(env='REDIS_FASTAPI_DSN')
 
     class Config:
         env_file = BASE_DIR / '.env'
         env_file_encoding = 'utf-8'
+
+
+settings = Settings()

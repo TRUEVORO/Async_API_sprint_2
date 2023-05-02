@@ -24,7 +24,7 @@ def etl(mapper: Mapper, settings: Settings) -> None:
 
     with closing(ElasticsearchClient(settings.elasticsearch_dsn)) as elasticsearch_client, closing(
         PostgresClient(settings.postgres_dsn)
-    ) as postgres_client, closing(RedisClient(settings.redis_etl_dsn)) as redis_client:
+    ) as postgres_client, closing(RedisClient(settings.redis_dsn)) as redis_client:
         state = State(storage=RedisStorage(redis_client=redis_client))
 
         with threading.Lock():

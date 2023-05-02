@@ -15,7 +15,7 @@ router = APIRouter(
 class MoviesAPI(Movies):
     """API model for list of movies."""
 
-    pass
+    total: int
 
 
 class MovieAPIFull(MovieFull):
@@ -31,7 +31,7 @@ class MovieAPIFull(MovieFull):
     description='Search movie by id',
     response_description='Full film details',
 )
-async def get_movie(
+async def movie_detail(
     movie_id: Annotated[UUID, Path(title='movie id', description='parameter - movie id')],
     movie_service: MovieService = Depends(get_movie_service),
 ) -> MovieAPIFull | HTTPException:
@@ -46,7 +46,7 @@ async def get_movie(
     description='Popular movies with sorting and filtering by genre',
     response_description='Summary of movies',
 )
-async def movies_main_page(
+async def movies_main(
     sort: Annotated[
         Literal['title', '-title', 'imdb_rating', '-imdb_rating'] | None,
         Query(title='sort', description='optional parameter - sort'),
@@ -56,10 +56,10 @@ async def movies_main_page(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     movie_service: MovieService = Depends(get_movie_service),
 ) -> MoviesAPI | HTTPException:
-    movies = await movie_service.search(
+    movies, total = await movie_service.search(
         sort_by=sort, filter_by=('genres', genre) if genre else None, page=page, page_size=page_size
     )
-    return MoviesAPI(movies=movies)
+    return MoviesAPI(movies=movies, total=total)
 
 
 @router.get(
@@ -69,7 +69,7 @@ async def movies_main_page(
     description='Full-text search of movies with sorting and filtering by genre',
     response_description='Summary of movies',
 )
-async def search_movies(
+async def movies_search(
     query: Annotated[str | None, Query(title='query', description='optional parameter - query')] = None,
     sort: Annotated[
         Literal['title', '-title', 'imdb_rating', '-imdb_rating'] | None,
@@ -80,7 +80,7 @@ async def search_movies(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     movie_service: MovieService = Depends(get_movie_service),
 ) -> MoviesAPI | HTTPException:
-    movies = await movie_service.search(
+    movies, total = await movie_service.search(
         query=query, sort_by=sort, filter_by=('genre', genre) if genre else None, page=page, page_size=page_size
     )
-    return MoviesAPI(movies=movies)
+    return MoviesAPI(movies=movies, total=total)

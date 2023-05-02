@@ -21,7 +21,7 @@ class GenreAPI(_Genre):
 class GenresAPI(Genres):
     """API model for list of genres."""
 
-    pass
+    total: int
 
 
 @router.get(
@@ -54,8 +54,8 @@ async def genres_main(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     genre_service: GenreService = Depends(get_genre_service),
 ) -> GenresAPI | HTTPException:
-    genres = await genre_service.search(sort_by=sort, page=page, page_size=page_size)
-    return GenresAPI(genres=genres)
+    genres, total = await genre_service.search(sort_by=sort, page=page, page_size=page_size)
+    return GenresAPI(genres=genres, total=total)
 
 
 @router.get(
@@ -65,7 +65,7 @@ async def genres_main(
     description='Full-text search of genres with sorting',
     response_description='Summary of genres',
 )
-async def genres_details(
+async def genres_search(
     query: Annotated[str | None, Query(title='query', description='optional parameter - query')] = None,
     sort: Annotated[
         Literal['name', '-name'] | None, Query(title='sort', description='optional parameter - sort')
@@ -74,5 +74,5 @@ async def genres_details(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     genre_service: GenreService = Depends(get_genre_service),
 ) -> GenresAPI | HTTPException:
-    genres = await genre_service.search(query, sort_by=sort, page=page, page_size=page_size)
-    return GenresAPI(genres=genres)
+    genres, total = await genre_service.search(query, sort_by=sort, page=page, page_size=page_size)
+    return GenresAPI(genres=genres, total=total)

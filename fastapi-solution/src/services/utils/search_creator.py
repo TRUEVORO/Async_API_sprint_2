@@ -98,7 +98,7 @@ class SearchBodyCreator:
         if not isinstance(search_body, dict):
             search_body = deepcopy(self.search_body)
 
-        search_body['from'] = page
+        search_body['from'] = page - 1
         search_body['size'] = page_size
 
         return search_body

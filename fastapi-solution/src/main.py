@@ -7,11 +7,8 @@ from fastapi.responses import ORJSONResponse
 
 from api.v1 import genres_router, movies_router, persons_router
 from client import AsyncElasticsearchClient
-from core import LOGGING, Settings
+from core import LOGGING, settings
 from db import elasticsearch, redis
-
-settings = Settings()
-
 
 app = FastAPI(
     title=settings.project_name,

@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Path, Query
 
-from models import Persons, _Person  # noqa
+from models import PersonFull, Persons
 from services import PersonService, get_person_service
 
 router = APIRouter(
@@ -12,7 +12,7 @@ router = APIRouter(
 )
 
 
-class PersonAPI(_Person):
+class PersonAPI(PersonFull):
     """API model for person."""
 
     pass
@@ -21,7 +21,7 @@ class PersonAPI(_Person):
 class PersonsAPI(Persons):
     """API model for list of persons."""
 
-    pass
+    total: int
 
 
 @router.get(
@@ -54,8 +54,8 @@ async def persons_main(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     person_service: PersonService = Depends(get_person_service),
 ) -> PersonsAPI | HTTPException:
-    persons = await person_service.search(sort_by=sort, page=page, page_size=page_size)
-    return PersonsAPI(persons=persons)
+    persons, total = await person_service.search(sort_by=sort, page=page, page_size=page_size)
+    return PersonsAPI(persons=persons, total=total)
 
 
 @router.get(
@@ -65,7 +65,7 @@ async def persons_main(
     description='Full-text search of persons',
     response_description='Short info of the person with similar ones',
 )
-async def persons_details(
+async def persons_search(
     query: Annotated[str | None, Query(title='query', description='optional parameter - query')] = None,
     sort: Annotated[
         Literal['full_name', '-full_name'] | None, Query(title='sort', description='optional parameter - sort')
@@ -74,5 +74,5 @@ async def persons_details(
     page_size: Annotated[int | None, Query(title='page size', description='optional parameter - page size', ge=1)] = 50,
     person_service: PersonService = Depends(get_person_service),
 ) -> PersonsAPI | HTTPException:
-    persons = await person_service.search(query=query, sort_by=sort, page=page, page_size=page_size)
-    return PersonsAPI(persons=persons)
+    persons, total = await person_service.search(query=query, sort_by=sort, page=page, page_size=page_size)
+    return PersonsAPI(persons=persons, total=total)

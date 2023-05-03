@@ -24,7 +24,7 @@ services:
     entrypoint: >
       sh -c "pip install --no-cache-dir -r tests/functional/requirements.txt
       && python tests/functional/utils/elasticsearch_setup.py
-      && pytest tests/functional/src"
+      && pytest -p no:cacheprovider tests/functional/src"
     environment:
       - PYTHONPATH=/opt/fastapi_solution:/opt/fastapi_solution/src
       - PROJECT_NAME=movies-test

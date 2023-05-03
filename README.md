@@ -8,6 +8,12 @@
 
 **От каждого разработчика ожидается выполнение минимум 40% от общего числа стори поинтов в спринте.**
 
+## Ссылки на спринты:
+
+- [Async_API_sprint_1](https://github.com/TRUEVORO/Async_API_sprint_1)
+- [Async_API_sprint_2](https://github.com/TRUEVORO/Async_API_sprint_2)
+- [new_admin_panel_sprint_2](https://github.com/TRUEVORO/new_admin_panel_sprint_2)
+
 ## Для запуска сервисов необходимо:
 
 ### 1. Создать .env на основе .env.template

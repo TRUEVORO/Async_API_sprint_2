@@ -1,8 +1,6 @@
 from functools import wraps
-from http import HTTPStatus
 
-from elasticsearch import ConnectionError
-from fastapi import HTTPException
+from core import NotFoundServiceError
 
 
 def status():
@@ -15,15 +13,10 @@ def status():
     def func_wrapper(func: callable):
         @wraps(func)
         async def inner(*args, **kwargs):
-            try:
-                result = await func(*args, **kwargs)
-            except ConnectionError:
-                raise HTTPException(
-                    status_code=HTTPStatus.SERVICE_UNAVAILABLE, detail='client is unavailable, retry later'
-                )
+            result = await func(*args, **kwargs)
 
             if not result or 0 in result:
-                raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='not found')
+                raise NotFoundServiceError()
 
             return result
 

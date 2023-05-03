@@ -1,3 +1,4 @@
+from http import HTTPStatus
 from uuid import uuid4
 
 import pytest
@@ -5,6 +6,8 @@ from pydantic import AnyHttpUrl
 from tests.functional.settings import test_settings
 from tests.functional.test_data import PERSONS_DATA
 from tests.functional.utils import PersonTest
+
+pytestmark = pytest.mark.asyncio
 
 PERSONS_URL: AnyHttpUrl = test_settings.service_dsn + '/api/v1/persons'
 
@@ -18,12 +21,15 @@ PERSONS_SORTED_BY_FULL_NAME_DESC: list[dict] = sorted(PERSONS_SHORT, key=lambda 
 @pytest.mark.parametrize(
     'query_data, expected_answer',
     [
-        ({'person_id': PERSONS_DATA['persons'][0]['id']}, {'status': 200, 'body': PERSONS_DATA['persons'][0]}),
-        ({'person_id': str(uuid4())}, {'status': 404, 'body': {'detail': 'not found'}}),
+        (
+            {'person_id': PERSONS_DATA['persons'][0]['id']},
+            {'status': HTTPStatus.OK, 'body': PERSONS_DATA['persons'][0]},
+        ),
+        ({'person_id': str(uuid4())}, {'status': HTTPStatus.NOT_FOUND, 'body': {'detail': 'not found'}}),
         (
             {'person_id': 'non-existent'},
             {
-                'status': 422,
+                'status': HTTPStatus.UNPROCESSABLE_ENTITY,
                 'body': {
                     'detail': [
                         {'loc': ['path', 'person_id'], 'msg': 'value is not a valid uuid', 'type': 'type_error.uuid'}
@@ -33,7 +39,6 @@ PERSONS_SORTED_BY_FULL_NAME_DESC: list[dict] = sorted(PERSONS_SHORT, key=lambda 
         ),
     ],
 )
-@pytest.mark.asyncio
 async def test_person_details(make_get_request, redis_clean_data, query_data, expected_answer):
     """Test the person details API endpoint."""
 
@@ -50,16 +55,21 @@ async def test_person_details(make_get_request, redis_clean_data, query_data, ex
     [
         (
             {},
-            {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50},
+            {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50},
         ),
-        ({'sort': 'full_name'}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50}),
-        ({'sort': '-full_name'}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_DESC[:50], 'length': 50}),
-        ({'sort': 'non-existent'}, {'status': 422, 'body': [], 'length': 0}),
-        ({'page': 5}, {'status': 200, 'body': [], 'length': 0}),
-        ({'page': 1, 'page_size': 2}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:2], 'length': 2}),
+        ({'sort': 'full_name'}, {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50}),
+        (
+            {'sort': '-full_name'},
+            {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_DESC[:50], 'length': 50},
+        ),
+        ({'sort': 'non-existent'}, {'status': HTTPStatus.UNPROCESSABLE_ENTITY, 'body': [], 'length': 0}),
+        ({'page': 5}, {'status': HTTPStatus.OK, 'body': [], 'length': 0}),
+        (
+            {'page': 1, 'page_size': 2},
+            {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:2], 'length': 2},
+        ),
     ],
 )
-@pytest.mark.asyncio
 async def test_persons_main(make_get_request, redis_clean_data, query_data, expected_answer):
     """Test the main persons API endpoint."""
 
@@ -75,17 +85,22 @@ async def test_persons_main(make_get_request, redis_clean_data, query_data, expe
     [
         (
             {'query': PERSONS_DATA['persons'][0]['full_name'], 'page_size': 1},
-            {'status': 200, 'body': [PersonTest(**PERSONS_DATA['persons'][0]).dict()], 'length': 1},
+            {'status': HTTPStatus.OK, 'body': [PersonTest(**PERSONS_DATA['persons'][0]).dict()], 'length': 1},
         ),
-        ({'query': 'non-existent'}, {'status': 404, 'body': [], 'length': 0}),
-        ({'sort': 'full_name'}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50}),
-        ({'sort': '-full_name'}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_DESC[:50], 'length': 50}),
-        ({'sort': 'non-existent'}, {'status': 422, 'body': [], 'length': 0}),
-        ({'page': 5}, {'status': 200, 'body': [], 'length': 0}),
-        ({'page': 1, 'page_size': 2}, {'status': 200, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:2], 'length': 2}),
+        ({'query': 'non-existent'}, {'status': HTTPStatus.NOT_FOUND, 'body': [], 'length': 0}),
+        ({'sort': 'full_name'}, {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:50], 'length': 50}),
+        (
+            {'sort': '-full_name'},
+            {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_DESC[:50], 'length': 50},
+        ),
+        ({'sort': 'non-existent'}, {'status': HTTPStatus.UNPROCESSABLE_ENTITY, 'body': [], 'length': 0}),
+        ({'page': 5}, {'status': HTTPStatus.OK, 'body': [], 'length': 0}),
+        (
+            {'page': 1, 'page_size': 2},
+            {'status': HTTPStatus.OK, 'body': PERSONS_SORTED_BY_FULL_NAME_ASC[:2], 'length': 2},
+        ),
     ],
 )
-@pytest.mark.asyncio
 async def test_persons_search(make_get_request, redis_clean_data, query_data, expected_answer):
     """Test the persons search API endpoint."""
 

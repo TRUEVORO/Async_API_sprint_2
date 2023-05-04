@@ -1,0 +1,968 @@
+{
+  "openapi": "3.0.2",
+  "info": {
+    "title": "movies",
+    "description": "Information about movies, genres, and people involved in creating the film work",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v1/movies/<{movie_id}:UUID>/": {
+      "get": {
+        "tags": [
+          "movies"
+        ],
+        "summary": "Search movie",
+        "description": "Search movie by id",
+        "operationId": "movie_detail_api_v1_movies___movie_id__UUID___get",
+        "parameters": [
+          {
+            "description": "parameter - movie id",
+            "required": true,
+            "schema": {
+              "title": "movie id",
+              "type": "string",
+              "description": "parameter - movie id",
+              "format": "uuid"
+            },
+            "name": "movie_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full film details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MovieAPIFull"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movies": {
+      "get": {
+        "tags": [
+          "movies"
+        ],
+        "summary": "Popular movies",
+        "description": "Popular movies with sorting and filtering by genre",
+        "operationId": "movies_main_api_v1_movies_get",
+        "parameters": [
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "title",
+                "-title",
+                "imdb_rating",
+                "-imdb_rating"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - filter by genre",
+            "required": false,
+            "schema": {
+              "title": "genre",
+              "type": "string",
+              "description": "optional parameter - filter by genre"
+            },
+            "name": "genre",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary of movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoviesAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/movies/search": {
+      "get": {
+        "tags": [
+          "movies"
+        ],
+        "summary": "Search movies",
+        "description": "Full-text search of movies with sorting and filtering by genre",
+        "operationId": "movies_search_api_v1_movies_search_get",
+        "parameters": [
+          {
+            "description": "optional parameter - query",
+            "required": false,
+            "schema": {
+              "title": "query",
+              "type": "string",
+              "description": "optional parameter - query"
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "title",
+                "-title",
+                "imdb_rating",
+                "-imdb_rating"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - filter by genre",
+            "required": false,
+            "schema": {
+              "title": "genre",
+              "type": "string",
+              "description": "optional parameter - filter by genre"
+            },
+            "name": "genre",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary of movies",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MoviesAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/genres/<{genre_id}:UUID>/": {
+      "get": {
+        "tags": [
+          "genres"
+        ],
+        "summary": "Search genre",
+        "description": "Search genre by id",
+        "operationId": "genre_details_api_v1_genres___genre_id__UUID___get",
+        "parameters": [
+          {
+            "description": "parameter - genre id",
+            "required": true,
+            "schema": {
+              "title": "genre id",
+              "type": "string",
+              "description": "parameter - genre id",
+              "format": "uuid"
+            },
+            "name": "genre_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full genre details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenreAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/genres": {
+      "get": {
+        "tags": [
+          "genres"
+        ],
+        "summary": "Genres",
+        "description": "Genres with sorting",
+        "operationId": "genres_main_api_v1_genres_get",
+        "parameters": [
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "name",
+                "-name"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary of genres",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenresAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/genres/search": {
+      "get": {
+        "tags": [
+          "genres"
+        ],
+        "summary": "Search genres",
+        "description": "Full-text search of genres with sorting",
+        "operationId": "genres_search_api_v1_genres_search_get",
+        "parameters": [
+          {
+            "description": "optional parameter - query",
+            "required": false,
+            "schema": {
+              "title": "query",
+              "type": "string",
+              "description": "optional parameter - query"
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "name",
+                "-name"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary of genres",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenresAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/persons/<{person_id}:UUID>/": {
+      "get": {
+        "tags": [
+          "persons"
+        ],
+        "summary": "Search person",
+        "description": "Search person by id",
+        "operationId": "person_details_api_v1_persons___person_id__UUID___get",
+        "parameters": [
+          {
+            "description": "parameter - person id",
+            "required": true,
+            "schema": {
+              "title": "person id",
+              "type": "string",
+              "description": "parameter - person id",
+              "format": "uuid"
+            },
+            "name": "person_id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full person details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/persons": {
+      "get": {
+        "tags": [
+          "persons"
+        ],
+        "summary": "Popular persons",
+        "description": "Popular genres with sorting",
+        "operationId": "persons_main_api_v1_persons_get",
+        "parameters": [
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "full_name",
+                "-full_name"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Summary of persons",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonsAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/persons/search": {
+      "get": {
+        "tags": [
+          "persons"
+        ],
+        "summary": "Search persons",
+        "description": "Full-text search of persons",
+        "operationId": "persons_search_api_v1_persons_search_get",
+        "parameters": [
+          {
+            "description": "optional parameter - query",
+            "required": false,
+            "schema": {
+              "title": "query",
+              "type": "string",
+              "description": "optional parameter - query"
+            },
+            "name": "query",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - sort",
+            "required": false,
+            "schema": {
+              "title": "sort",
+              "enum": [
+                "full_name",
+                "-full_name"
+              ],
+              "type": "string",
+              "description": "optional parameter - sort"
+            },
+            "name": "sort",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page number",
+            "required": false,
+            "schema": {
+              "title": "page number",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page number",
+              "default": 1
+            },
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "description": "optional parameter - page size",
+            "required": false,
+            "schema": {
+              "title": "page size",
+              "minimum": 1.0,
+              "type": "integer",
+              "description": "optional parameter - page size",
+              "default": 50
+            },
+            "name": "page_size",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Short info of the person with similar ones",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonsAPI"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GenreAPI": {
+        "title": "GenreAPI",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "example": "Sport"
+          }
+        },
+        "description": "API model for genre."
+      },
+      "GenresAPI": {
+        "title": "GenresAPI",
+        "required": [
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "genres": {
+            "title": "Genres",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Genre"
+            }
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "description": "API model for list of genres."
+      },
+      "HTTPValidationError": {
+        "title": "HTTPValidationError",
+        "type": "object",
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            }
+          }
+        }
+      },
+      "MovieAPIFull": {
+        "title": "MovieAPIFull",
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string",
+            "example": "1983 MLB All-Star Game"
+          },
+          "imdb_rating": {
+            "title": "Imdb Rating",
+            "type": "number",
+            "example": 6.5
+          },
+          "description": {
+            "title": "Description",
+            "type": "string",
+            "example": "Something interesting about movie"
+          },
+          "genres": {
+            "title": "Genres",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Genre"
+            }
+          },
+          "actors": {
+            "title": "Actors",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Person"
+            }
+          },
+          "directors": {
+            "title": "Directors",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Person"
+            }
+          },
+          "writers": {
+            "title": "Writers",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Person"
+            }
+          },
+          "actors_names": {
+            "title": "Actors Names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Kendrick Lamar"
+            ]
+          },
+          "writers_names": {
+            "title": "Writers Names",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Kendrick Lamar"
+            ]
+          }
+        },
+        "description": "API model for movie with full description."
+      },
+      "MoviesAPI": {
+        "title": "MoviesAPI",
+        "required": [
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "movies": {
+            "title": "Movies",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Movie"
+            }
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "description": "API model for list of movies."
+      },
+      "PersonAPI": {
+        "title": "PersonAPI",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string",
+            "example": "Kendrick Lamar"
+          },
+          "films": {
+            "title": "Films",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Films"
+            }
+          }
+        },
+        "description": "API model for person."
+      },
+      "PersonsAPI": {
+        "title": "PersonsAPI",
+        "required": [
+          "total"
+        ],
+        "type": "object",
+        "properties": {
+          "persons": {
+            "title": "Persons",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/_Person"
+            }
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "description": "API model for list of persons."
+      },
+      "ValidationError": {
+        "title": "ValidationError",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "type": "object",
+        "properties": {
+          "loc": {
+            "title": "Location",
+            "type": "array",
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            }
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        }
+      },
+      "_Films": {
+        "title": "_Films",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "roles": {
+            "title": "Roles",
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": ""
+          }
+        },
+        "description": "Films model with person's roles."
+      },
+      "_Genre": {
+        "title": "_Genre",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string",
+            "example": "Sport"
+          }
+        },
+        "description": "Genre model."
+      },
+      "_Movie": {
+        "title": "_Movie",
+        "required": [
+          "title"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string",
+            "example": "1983 MLB All-Star Game"
+          },
+          "imdb_rating": {
+            "title": "Imdb Rating",
+            "type": "number",
+            "example": 6.5
+          }
+        },
+        "description": "Movie model with short description."
+      },
+      "_Person": {
+        "title": "_Person",
+        "type": "object",
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "title": "Full Name",
+            "type": "string",
+            "example": "Kendrick Lamar"
+          }
+        },
+        "description": "Person model."
+      }
+    }
+  }
+}

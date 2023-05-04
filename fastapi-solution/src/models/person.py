@@ -6,13 +6,13 @@ from .mixin import OrjsonMixin, UUIDMixin
 class _Films(UUIDMixin):
     """Films model with person's roles."""
 
-    roles: list[str] = Field(default_factory=list)
+    roles: list[str] = Field(default_factory=list, example=['actor', 'director', 'writer'])
 
 
 class _Person(UUIDMixin):
     """Person model."""
 
-    full_name: str = Field(default_factory=str)
+    full_name: str = Field(default_factory=str, example='Kendrick Lamar')
 
 
 class PersonFull(_Person):

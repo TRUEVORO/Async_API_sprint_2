@@ -8,8 +8,8 @@ from .person import _Person
 class _Movie(UUIDMixin):
     """Movie model with short description."""
 
-    title: str
-    imdb_rating: float | None = Field(default=None)
+    title: str = Field(example='1983 MLB All-Star Game')
+    imdb_rating: float | None = Field(default=None, example=6.5)
 
 
 class Movies(BaseModel):
@@ -21,13 +21,13 @@ class Movies(BaseModel):
 class MovieFull(_Movie):
     """Movie model with full description."""
 
-    description: str | None = Field(default=None)
+    description: str | None = Field(default=None, example='Something interesting about movie')
     genres: list[_Genre] = Field(default_factory=list)
     actors: list[_Person] = Field(default_factory=list)
     directors: list[_Person] = Field(default_factory=list)
     writers: list[_Person] = Field(default_factory=list)
-    actors_names: list[str] = Field(default_factory=list)
-    writers_names: list[str] = Field(default_factory=list)
+    actors_names: list[str] = Field(default_factory=list, example=['Kendrick Lamar'])
+    writers_names: list[str] = Field(default_factory=list, example=['Kendrick Lamar'])
 
 
 class Movie(MovieFull, OrjsonMixin):

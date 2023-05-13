@@ -8,9 +8,5 @@ class TestSettings(BaseSettings):
     redis_dsn: RedisDsn | AnyHttpUrl = Field('http://localhost:6379', env='REDIS_FASTAPI_DSN')
     service_dsn: AnyHttpUrl = Field('http://localhost:8000')
 
-    # class Config:
-    #     env_file = '.env.test'
-    #     env_file_encoding = 'utf-8'
-
 
 test_settings = TestSettings()

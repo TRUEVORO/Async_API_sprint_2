@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+message UserTokenRequest {
+  string token = 1;
+}
+
+message UserResponse {
+  string id = 1;
+  string role = 7;
+}
+
+service Detailer {
+  rpc DetailsByToken (UserTokenRequest) returns (UserResponse) {}
+}

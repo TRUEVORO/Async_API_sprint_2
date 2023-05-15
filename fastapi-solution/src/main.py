@@ -2,12 +2,12 @@ import logging
 
 import uvicorn
 from elasticsearch import AsyncElasticsearch
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.responses import ORJSONResponse
 
 from api.v1 import genres_router, movies_router, persons_router
 from client import AsyncElasticsearchClient
-from core import LOGGING, settings
+from core import LOGGING, security_jwt_remote, settings
 from db import elasticsearch, redis
 
 app = FastAPI(
@@ -31,9 +31,18 @@ async def shutdown():
     await elasticsearch.elasticsearch.close()
 
 
-app.include_router(movies_router)
-app.include_router(genres_router)
-app.include_router(persons_router)
+app.include_router(
+    movies_router,
+    dependencies=[Depends(security_jwt_remote)],
+)
+app.include_router(
+    genres_router,
+    dependencies=[Depends(security_jwt_remote)],
+)
+app.include_router(
+    persons_router,
+    dependencies=[Depends(security_jwt_remote)],
+)
 
 
 if __name__ == '__main__':

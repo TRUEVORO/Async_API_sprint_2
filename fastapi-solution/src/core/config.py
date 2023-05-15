@@ -17,6 +17,9 @@ class Settings(BaseSettings):
     elasticsearch_dsn: AnyHttpUrl
     redis_dsn: RedisDsn = Field(env='REDIS_FASTAPI_DSN')
 
+    grpc_host: str
+    grpc_port: int
+
     class Config:
         env_file = BASE_DIR / '.env'
         env_file_encoding = 'utf-8'
